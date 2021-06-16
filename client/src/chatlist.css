@@ -1,0 +1,55 @@
+.chatlist {
+  height: 100vh;
+  border-right: 3px solid #ccc;
+  border-left: 3px solid #ccc;
+  overflow-y: scroll;
+  background-color: #e6fff9;
+}
+.chatlist::-webkit-scrollbar {
+  display: none;
+}
+.searchbox {
+  padding: 5%;
+  background-color: #e6fff9;
+  position: sticky;
+  top: 0;
+}
+.searchbox input {
+  font-size: large;
+  background-color: #e6fff9;
+  width: 60%;
+  border: none;
+  border-bottom: 4px solid #ccc;
+  -webkit-transition: 0.5s;
+  transition: 0.5s;
+  outline: none;
+}
+.searchbox input:focus {
+  border-bottom: 4px solid #555;
+}
+.list {
+  margin: 5%;
+  padding: 3%;
+  background: #ffe066;
+}
+.list button {
+  border: none;
+  background-color: #ffe066;
+}
+.list button:focus {
+  outline: none;
+}
+.list button:hover {
+  cursor: pointer;
+}
+#searchResult {
+  position: fixed;
+}
+.deleteButton {
+  position: absolute;
+  right: 15%;
+  margin-top: 2%;
+}
+.deleteButton button:hover {
+  background-color: #e6b800;
+}
