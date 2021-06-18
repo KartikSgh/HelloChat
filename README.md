@@ -8,7 +8,7 @@ We can send and recieve messages in realtime, add and delete the user from the l
 
 //////////////////////////////////
 
-Technology used-> React js, MySQL, Express-Node.js, Socket.io, Axios
+Technology used-> HTML, CSS, React js, MySQL, Express-Node.js, Socket.io, Axios
 
 React js - it is used for the frontend
 
