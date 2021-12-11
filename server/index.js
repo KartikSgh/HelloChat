@@ -7,6 +7,8 @@ const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const session = require("express-session");
 
+const { encrypt, decrypt } = require("./EncryptionHandler");
+
 const app = express();
 
 app.use(express.json());
@@ -67,7 +69,6 @@ app.get("/logout", (req, res) => {
 
 app.post("/login", (req, res) => {
   const loginCredencials = [req.body.username, req.body.password];
-
   //Verifying if same Username with different password exist or not.
 
   const sqlVarify = "SELECT * FROM users WHERE username=?";
@@ -78,7 +79,10 @@ app.post("/login", (req, res) => {
     }
     if (result0) {
       if (result0.length > 0) {
-        if (loginCredencials[1] !== result0[0].password) {
+        if (
+          loginCredencials[1] !==
+          decrypt({ data: result0[0].password, iv: result0[0].iv })
+        ) {
           res.send([
             { id: -1 },
             { message: "Username Already Exist or Wrong Password" },
@@ -92,24 +96,32 @@ app.post("/login", (req, res) => {
           ]);
         }
       } else {
+        //Encrypting the password
+        const encryptedPassword = encrypt(req.body.password);
+
         //Username and Password Already not exist so inserting into database.
-        const sqlInsert = "INSERT INTO users (username,password) VALUES (?,?)";
-        db.query(sqlInsert, loginCredencials, (err2, result2) => {
-          if (err2) {
-            res.send([{ id: -1 }, { message: err2 }]);
+        const sqlInsert =
+          "INSERT INTO users (username,password,iv) VALUES (?,?,?)";
+        db.query(
+          sqlInsert,
+          [loginCredencials[0], encryptedPassword.data, encryptedPassword.iv],
+          (err2, result2) => {
+            if (err2) {
+              res.send([{ id: -1 }, { message: err2 }]);
+            }
+            if (result2) {
+              //Getting user id of that inserted credentials.
+              req.session.user = [result2.insertId, loginCredencials[0]];
+              res.send([
+                { id: result2.insertId },
+                { message: "Loading ..." },
+                { user: loginCredencials[0] },
+              ]);
+            } else {
+              res.send([{ id: -1 }, { message: connectionProblemMessage }]);
+            }
           }
-          if (result2) {
-            //Getting user id of that inserted credentials.
-            req.session.user = [result2[0].id, loginCredencials[0]];
-            res.send([
-              { id: result2.insertId },
-              { message: "Loading ..." },
-              { user: loginCredencials[0] },
-            ]);
-          } else {
-            res.send([{ id: -1 }, { message: connectionProblemMessage }]);
-          }
-        });
+        );
       }
     } else {
       res.send([{ id: -1 }, { message: connectionProblemMessage }]);
@@ -205,7 +217,15 @@ app.post("/chatArea", (req, res) => {
     if (err) {
       res.send([{ fetchStatus: false }, { message: err }]);
     }
+
     if (result) {
+      for (var i = 0; i < result.length; i++) {
+        result[i].message = decrypt({
+          data: result[i].message,
+          iv: result[i].iv,
+        });
+      }
+
       res.send([{ fetchStatus: true }, result]);
     } else {
       res.send([{ fetchStatus: false }, { message: connectionProblemMessage }]);
@@ -239,14 +259,17 @@ app.post("/chatArea/setReadStatus", (req, res) => {
 });
 //chatArea requests for inserting messages into database.
 app.post("/chatArea/message", (req, res) => {
+  const encryptedMessages = encrypt(req.body.message);
+
   const details = {
     userfrom: req.body.userfrom,
     userto: req.body.userto,
-    message: req.body.message,
+    message: encryptedMessages.data,
     datetime: req.body.datetime,
+    iv: encryptedMessages.iv,
   };
   const sqlInsert =
-    "INSERT INTO messages (userfrom,userto,message,datetime,readstatus) VALUES (?,?,?,?,?)";
+    "INSERT INTO messages (userfrom,userto,message,datetime,readstatus,iv) VALUES (?,?,?,?,?,?)";
   db.query(
     sqlInsert,
     [
@@ -255,6 +278,7 @@ app.post("/chatArea/message", (req, res) => {
       details.message,
       details.datetime,
       false,
+      details.iv,
     ],
     (err, result) => {
       if (err) {
