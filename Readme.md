@@ -1,45 +1,53 @@
-# HelloChat
+## HelloChat
 
 Realtime Chatting React Application
 
-///////////////////////////////////
+## Description
 
-HelloChat is a Realtime Chatting system. Its concept is inspired by WhatsApp. UI features are similar to it. Its a one page Application. For the sake of simplicity, it allows to chat in only text messages.
+HelloChat is a Realtime Chatting system.
+Its concept is inspired by WhatsApp.
+UI features are similar to it.
+Its a one page Application.
+For the sake of simplicity, it allows to chat in only text messages.
 We can send and recieve messages in realtime, add and delete the user from the list of users with whom we are chatting.
+Messages are stored in database in encrypted form (Symmetric Encryption).
+Suggestions are given when user search for other users to add to list to chat with.
 
-//////////////////////////////////
+## Technology Used
 
-Technology used-> HTML, CSS, React js, MySQL, Express-Node.js, Socket.io, Axios
+HTML, CSS, React js, MySQL, Express-Node.js, Socket.io, Axios, Crypto
 
-React js - it is used for the frontend
+React js : frontend
 
-MySQL - DataBase
+MySQL : DataBase
 
-Express-Node.js - for implementing backend in JavaScript
+Express-Node.js : for implementing backend in JavaScript
 
-Socket.io - for realtime data transfer
+Socket.io : for realtime data transfer
 
-Axios - for making http requests
+Axios : for making http requests
 
-/////////////////////////////////
+Crypto : Node js module for encryption and decryption
+
+## Deployment
 
 Points for deploying it on local machine :
 
 All frontend code is written in client folder.
 
-React server runs on default port 3000.
+-React server runs on default port 3000.
 
 All Backend code is written in server folder.
 
-Backend server runs on port 3001.
+-Backend server runs on port 3001.
 
-////////////////////////////////
+## Scripts
 
 Scripts to run servers :
 
-Express server - yarn start / npm start
+Express server - `yarn start / npm start`
 
-Backend server - npm run devStart
+Backend server - `npm run devStart`
 
 ![Screenshot (193)](https://user-images.githubusercontent.com/56961805/123983452-82303b00-d9e1-11eb-817f-883e594d9f30.png)
 ![Screenshot (194)](https://user-images.githubusercontent.com/56961805/123983495-8b210c80-d9e1-11eb-974c-4e4f3beca761.png)
