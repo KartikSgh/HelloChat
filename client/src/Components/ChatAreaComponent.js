@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import io from "socket.io-client";
 import Axios from "axios";
-import "../chatarea.css";
+import "../CSS/chatarea.css";
 //#2d5986
 
 let socket;
