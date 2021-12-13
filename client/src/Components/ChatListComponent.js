@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import Axios from "axios";
-import "../chatlist.css";
+import "../CSS/chatlist.css";
+const { autocomplete, closeAllLists } = require("./utility/autocomplete.js");
 //#ffe066
 //#e6fff9
 
@@ -32,6 +33,10 @@ class ChatList extends Component {
           response.data[1].message;
       }
     });
+    //closes all the suggestions input
+    document.addEventListener("click", function (e) {
+      closeAllLists(e.target);
+    });
   };
   //function to delete particular list from all the list.
   deleteList = (userListId) => {
@@ -52,6 +57,7 @@ class ChatList extends Component {
       }
     });
   };
+
   //adding a new user to the list of username with whom we are chatting with
   addUserToList = () => {
     if (this.state.newUser == null) {
@@ -84,12 +90,34 @@ class ChatList extends Component {
   //checking whether it already exist in the list or it is not the name of the user logged in itself.
   checkNewUser = (user) => {
     document.getElementById("searchResult").innerHTML = "";
-    if (this.state.userList.includes(user) || user === this.props.user) {
+    if (
+      this.state.userList.some((row) => row.includes(user)) ||
+      user === this.props.user
+    ) {
+      closeAllLists(null, document.getElementById("searchboxInput"));
       if (this.state.newUser != null) {
         this.setState({ newUser: null });
       }
     } else {
       this.setState({ newUser: user });
+      if (user !== "" && user !== " ") {
+        Axios.post("http://localhost:3001/list/suggest", {
+          username: user,
+        }).then((response) => {
+          var arr = [user];
+          for (var i = 0; i < response.data.length; i++) {
+            arr.push(response.data[i].username);
+          }
+          autocomplete(
+            document.getElementById("searchboxInput"),
+            user,
+            arr,
+            this
+          );
+        });
+      } else {
+        closeAllLists(null, document.getElementById("searchboxInput"));
+      }
     }
   };
   //making all the lists components to add
@@ -141,20 +169,24 @@ class ChatList extends Component {
     return (
       <div className="col-sm-12 col-md-4 pb-5 chatlist">
         <div className="row searchbox justify-content-center">
-          <input
-            type="text"
-            placeholder="Search..."
-            onChange={(e) => {
-              this.checkNewUser(e.target.value);
-            }}
-          ></input>
-          <button
-            type="submit"
-            className="btn btn-info ml-2"
-            onClick={this.addUserToList}
-          >
-            Search
-          </button>
+          <div className="autocomplete">
+            <input
+              id="searchboxInput"
+              type="text"
+              placeholder="Search..."
+              onChange={(e) => {
+                this.checkNewUser(e.target.value);
+              }}
+            ></input>
+
+            <button
+              type="submit"
+              className="btn btn-info ml-2"
+              onClick={this.addUserToList}
+            >
+              Search
+            </button>
+          </div>
         </div>
         <div id="searchResult" className="row ml-5 pl-5 text-danger"></div>
         {this.renderList()}

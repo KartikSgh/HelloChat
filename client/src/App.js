@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import Axios from "axios";
-import "./App.css";
+import "./CSS/App.css";
 import Login from "./Components/LoginComponent";
 import Chat from "./Components/ChatComponent";
 

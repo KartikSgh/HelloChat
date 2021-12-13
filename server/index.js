@@ -205,6 +205,23 @@ app.post("/list/deleteList", (req, res) => {
   });
 });
 
+app.post("/list/suggest", (req, res) => {
+  const sqlFetch =
+    "SELECT username FROM users WHERE username LIKE '" +
+    req.body.username +
+    "%' LIMIT 5";
+  db.query(sqlFetch, (err, result) => {
+    if (err) {
+      res.send([]);
+    }
+    if (result) {
+      res.send(result);
+    } else {
+      res.send([]);
+    }
+  });
+});
+
 //chatArea requests
 
 //chatArea requests for fetching messages from database.
